@@ -1,17 +1,16 @@
 # vpc-cni
 Custom networking with the AWS VPC CNI plug-in
 
-Steps:
-=======
+High Level Steps:
+1. Attach secondary CIDR to existing VPC where EKS cluster is created
+2. Create Subnets within secondary CIDR range
+3. Create eniconfig for each AZ and apply it
+4. Add env variables (AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG,ENI_CONFIG_LABEL_DEF, AWS_VPC_K8S_CNI_EXTERNALSNAT) for aws-node daemonset 
+5. Create eniconfig for each AZ and apply it
+6. Configure Custom networking
+7. TEST NETWORKING
 
- - Attach secondary CIDR to existing VPC where EKS cluster is created
- - Create Subnets within secondary CIDR range
- - Create eniconfig for each AZ and apply it
- - Add env variables (AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG,ENI_CONFIG_LABEL_DEF, AWS_VPC_K8S_CNI_EXTERNALSNAT) for aws-node daemonset 
- - Create eniconfig for each AZ and apply it
- - Configure Custom networking
- - TEST NETWORKING
-
+Will have following network for VPC-CNI example:
 
           VPC          CIDR	             Subnet A	    Subnet B	    Subnet C
           Primary	192.168.0.0/16	192.168.0.0/19	192.168.32.0/19	192.168.64.0/19
@@ -23,6 +22,9 @@ Steps:
 
           VPC_ID=aws ec2 describe-vpcs --filters Name=tag:Name,Values=*eksdemo-qa* --query 'Vpcs[].VpcId' --output text
           aws ec2 associate-vpc-cidr-block --vpc-id $VPC_ID --cidr-block 100.64.0.0/16
+
+<img width="1265" alt="image" src="https://user-images.githubusercontent.com/74225291/166150682-ab6b202e-bd67-495e-894f-1ae447cb71ea.png">
+
 
 **2.Create Subnets within secondary CIDR range**
 
@@ -42,6 +44,8 @@ we need to associate three new subnets into a route table. Again for simplicity,
           aws ec2 associate-route-table --route-table-id $RTASSOC_ID --subnet-id $CGNAT_SNET1
           aws ec2 associate-route-table --route-table-id $RTASSOC_ID --subnet-id $CGNAT_SNET2
           aws ec2 associate-route-table --route-table-id $RTASSOC_ID --subnet-id $CGNAT_SNET3
+
+
 
 **3.CONFIGURE CNI**
 
