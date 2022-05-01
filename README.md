@@ -4,13 +4,13 @@ Custom networking with the AWS VPC CNI plug-in
 Steps:
 =======
 
-1. Attach secondary CIDR to existing VPC where EKS cluster is created
-2. Create Subnets within secondary CIDR range
-3. Create eniconfig for each AZ and apply it
-4. Add env variables (AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG,ENI_CONFIG_LABEL_DEF, AWS_VPC_K8S_CNI_EXTERNALSNAT) for aws-node daemonset 
-5. Create eniconfig for each AZ and apply it
-6. Configure Custom networking
-7. TEST NETWORKING
+ - Attach secondary CIDR to existing VPC where EKS cluster is created
+ - Create Subnets within secondary CIDR range
+ - Create eniconfig for each AZ and apply it
+ - Add env variables (AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG,ENI_CONFIG_LABEL_DEF, AWS_VPC_K8S_CNI_EXTERNALSNAT) for aws-node daemonset 
+ - Create eniconfig for each AZ and apply it
+ - Configure Custom networking
+ - TEST NETWORKING
 
 
           VPC          CIDR	             Subnet A	    Subnet B	    Subnet C
@@ -130,3 +130,13 @@ Launch pods into Secondary CIDR network
           kube-system   kube-proxy-cft2t           1/1     Running   0          7m22s   192.168.5.237  
           kube-system   kube-proxy-hxchf           1/1     Running   0          5m36s   192.168.73.215 
           kube-system   kube-proxy-mglfb           1/1     Running   0          3m40s   192.168.41.255 
+
+Additional notes on ‘maxPodsPerNode’ :
+
+Enabling a custom network effectively removes an available network interface (and all of its available IP addresses for pods) from each node that uses it. The primary network interface for the node is not used for pod placement when a custom network is enabled. Determine the maximum number of pods that can be scheduled on each node using the following formula.
+
+
+           maxPodsPerNode = (number of interfaces - 1) * (max IPv4 addresses per interface - 1) + 2
+
+           For example, use the following value for t3.small
+           maxPodsPerNode = (3 - 1) * (4 - 1) + 2 = 8
