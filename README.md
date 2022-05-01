@@ -33,6 +33,8 @@ I have 3 instances and using 3 subnets in my environment. For simplicity, we wil
 
 
           export POD_AZS=($(aws ec2 describe-instances --filters "Name=tag-key,Values=eks:cluster-name" "Name=tag-value,Values=*eksdemo-qa*" --query 'Reservations[*].Instances[*].[Placement.AvailabilityZone]' --output text | sort | uniq))
+          
+          
           CGNAT_SNET1=$(aws ec2 create-subnet --cidr-block 100.64.0.0/19 --vpc-id $VPC_ID --availability-zone us-east-2a --query 'Subnet.SubnetId' --output text)
           CGNAT_SNET2=$(aws ec2 create-subnet --cidr-block 100.64.32.0/19 --vpc-id $VPC_ID --availability-zone us-east-2b --query 'Subnet.SubnetId' --output text)
           CGNAT_SNET3=$(aws ec2 create-subnet --cidr-block 100.64.64.0/19 --vpc-id $VPC_ID --availability-zone us-east-2c --query 'Subnet.SubnetId' --output text)
@@ -41,6 +43,7 @@ we need to associate three new subnets into a route table. Again for simplicity,
 
           SNET1=$(aws ec2 describe-subnets --filters Name=cidr-block,Values=192.168.0.0/19 --query 'Subnets[].SubnetId' --output text)
           RTASSOC_ID=$(aws ec2 describe-route-tables --filters Name=association.subnet-id,Values=$SNET1 --query 'RouteTables[].RouteTableId' --output text)
+          
           aws ec2 associate-route-table --route-table-id $RTASSOC_ID --subnet-id $CGNAT_SNET1
           aws ec2 associate-route-table --route-table-id $RTASSOC_ID --subnet-id $CGNAT_SNET2
           aws ec2 associate-route-table --route-table-id $RTASSOC_ID --subnet-id $CGNAT_SNET3
@@ -79,6 +82,7 @@ Check your Worker Node SecurityGroup
           # export NETCONFIG_SECURITY_GROUPS=$(for i in "${INSTANCE_IDS[@]}"; do  aws ec2 describe-instances --instance-ids $i | jq -r '.Reservations[].Instances[].SecurityGroups[].GroupId'; done  | sort | uniq | awk -vORS=, '{print $1 }' | sed 's/,$//')
           # echo $NETCONFIG_SECURITY_GROUPS
           sg-0917c42587e776c96,sg-0dbb27eab2c02382a
+          
           # aws ec2 describe-subnets  --filters "Name=cidr-block,Values=100.64.*" --query 'Subnets[*].[CidrBlock,SubnetId,AvailabilityZone]' --output table
           --------------------------------------------------------------
           |                       DescribeSubnets                      |
