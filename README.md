@@ -4,10 +4,11 @@ Custom networking with the AWS VPC CNI plug-in
 Steps:
 =======
 
-1. Attach secondary CIDR to existing VPC where EKS cluster is created
-2. Create Subnets within secondary CIDR range
-3. Create eniconfig for each AZ and apply it
-4. Add env variables (AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG,ENI_CONFIG_LABEL_DEF, AWS_VPC_K8S_CNI_EXTERNALSNAT) for aws-node daemonset 
+1.Attach secondary CIDR to existing VPC where EKS cluster is created
+2.Create Subnets within secondary CIDR range
+3.Create eniconfig for each AZ and apply it
+4.Add env variables (AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG,ENI_CONFIG_LABEL_DEF, AWS_VPC_K8S_CNI_EXTERNALSNAT) for aws-node daemonset 
+
 
           VPC          CIDR	             Subnet A	    Subnet B	    Subnet C
           Primary	192.168.0.0/16	192.168.0.0/19	192.168.32.0/19	192.168.64.0/19
