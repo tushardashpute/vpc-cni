@@ -9,13 +9,9 @@ Steps:
 3. Create eniconfig for each AZ and apply it
 4. Add env variables (AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG,ENI_CONFIG_LABEL_DEF, AWS_VPC_K8S_CNI_EXTERNALSNAT) for aws-node daemonset 
 
-          VPC	    CIDR	             Subnet A	    Subnet B	    Subnet C
+          VPC          CIDR	             Subnet A	    Subnet B	    Subnet C
           Primary	192.168.0.0/16	192.168.0.0/19	192.168.32.0/19	192.168.64.0/19
           Secondary	100.64.0.0/16	100.64.0.0/19	100.64.32.0/19	100.64.64.0/19
-
-<img width="494" alt="image" src="https://user-images.githubusercontent.com/74225291/166148858-be892757-ba31-4b21-bf32-eaf6c9890e28.png">
-
-
 
 
 1. Attach secondary CIDR to existing VPC where EKS cluster is created
